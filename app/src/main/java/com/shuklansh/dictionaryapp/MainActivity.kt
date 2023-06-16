@@ -54,37 +54,41 @@ class MainActivity : ComponentActivity() {
                     scaffoldState = scaffoldState
                 ) {
 
-                    Box(modifier = Modifier.fillMaxSize()){
+                    Box(modifier = Modifier.fillMaxSize()) {
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(4.dp))
+                                .padding(4.dp)
+                        )
                         {
 
                             TextField(
                                 value = vm.searchQuery.value,
                                 onValueChange = vm::onSearch,
-                                modifier = Modifier.fillMaxWidth().height(72.dp),
-                                placeholder = {Text(text = "Search")}
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(72.dp),
+                                placeholder = { Text(text = "Search") }
                             )
                             Spacer(Modifier.height(12.dp))
-                            LazyColumn(Modifier.fillMaxSize()){
-                                items(state.value.wordInfoItems.size){ i->
+                            LazyColumn(Modifier.fillMaxSize()) {
+                                items(state.value.wordInfoItems.size) { i ->
                                     val wordInfo = state.value.wordInfoItems[i]
-                                    if(i>0){
+                                    if (i > 0) {
                                         Spacer(Modifier.height(8.dp))
                                     }
                                     WordInfoItem(wordInfo = wordInfo)
-                                    if(i < state.value.wordInfoItems.size -1){
+                                    if (i < state.value.wordInfoItems.size - 1) {
                                         Divider()
                                     }
 
                                 }
                             }
-                            if(state.value.isLoading){
-                                CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
-                            }
 
+
+                        }
+                        if (state.value.isLoading) {
+                            CircularProgressIndicator(Modifier.align(Alignment.Center))
                         }
                     }
 
