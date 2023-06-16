@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.flow
 
 // these use cases will be called from viewmodel (viewmodels belong in presentation layer)
 class GetWordInfo(
-    private val repository: WordInfoRepository
+    public val repository: WordInfoRepository
 ) {
     // use invoke to call the usecase like a function even if it was a class
     operator fun invoke(word : String) : Flow<Resource<List<WordInfo>>> {

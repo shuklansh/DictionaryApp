@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_two"
+    app:startDestination="@id/translateScreen">
+
+    <fragment
+        android:id="@+id/translateScreen"
+        android:name="com.shuklansh.dictionaryapp.feature_translate_de.presentation.Composables.TranslateScreen"
+        android:label="fragment_translate_screen"
+        tools:layout="@layout/fragment_translate_screen" />
+</navigation>

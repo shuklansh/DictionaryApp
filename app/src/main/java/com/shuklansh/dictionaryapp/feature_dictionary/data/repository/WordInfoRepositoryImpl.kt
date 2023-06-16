@@ -34,7 +34,7 @@ class WordInfoRepositoryImpl(
             // -> update the new data from api to local db
             dao.insertWordInfo(remoteWordInfos.map { it.toWordInfoEntity() })
         } catch (e : HttpException){ // if we get bad response
-            emit(Resource.Error(message = "Something went wrong", data = wordinfos ))
+            emit(Resource.Error(message = "No responses found for '$word'", data = wordinfos ))
         } catch (e : IOException){ // if we dont have internet connection/wrong parsing
             emit(Resource.Error(message = "Check Your Internet Connection", data = wordinfos ))
         }

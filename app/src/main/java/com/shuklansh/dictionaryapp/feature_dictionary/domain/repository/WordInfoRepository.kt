@@ -10,5 +10,4 @@ interface WordInfoRepository {
 
     fun getWordInfo(word : String) : Flow<Resource<List<WordInfo>>>
 
-
 }

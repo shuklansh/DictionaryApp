@@ -1,10 +1,10 @@
-package com.shuklansh.dictionaryapp.feature_dictionary.presentation
+package com.shuklansh.dictionaryapp.feature_translate_de.presentation
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.shuklansh.dictionaryapp.core.util.Resource
-import com.shuklansh.dictionaryapp.feature_dictionary.domain.use_case.GetWordInfo
+import com.shuklansh.dictionaryapp.feature_dictionary.presentation.UiEvent
+import com.shuklansh.dictionaryapp.feature_translate_de.domain.use_case.GetTransledWord
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -13,55 +13,46 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class WordInfoViewModel @Inject constructor(
-    val getWordInfo: GetWordInfo // the use case is called here
+class TranslateViewModel @Inject constructor(
+    val getTranslationWordUseCase : GetTransledWord
 ) : ViewModel() {
 
-    // search box textfield state
-    private val _searchQuery = mutableStateOf<String>("")
-    val searchQuery = _searchQuery
+    private val _queryTranslate = MutableStateFlow(queryState())
+    val query = _queryTranslate.asStateFlow()
 
-    val tester = "this is from WordInfoviewmodel screen : TestFragment"
-    val tester2 = "this is from WordInfoviewmodel screen : SecondScreen"
-
-    private val _queryState = MutableStateFlow(queryState())
-    val qstate = _queryState.asStateFlow()
-
-    fun updateQuery(word: String) {
-        _queryState.update {
+    fun updateTranslationQuery(word: String) {
+        _queryTranslate.update {
             it.copy(
-                queryword = word
+                queryWord = word
             )
         }
     }
 
-    // wordinfostate
-    private val _state = MutableStateFlow(WordInfoState())
-    val state = _state
+    private val _state = MutableStateFlow(WordTranslateState())
+    val state = _state.asStateFlow()
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
     private var searchJob: Job? = null
 
-    fun onSearch(word: String) {
-        //_searchQuery.value = word
-        updateQuery(word)
+    fun getTranslation(word : String){
+        updateTranslationQuery(word)
         searchJob?.cancel()
         searchJob = viewModelScope.launch {
             delay(500L)
-            getWordInfo(word).onEach { result ->
+            getTranslationWordUseCase(word).onEach { result ->
                 when (result) {
                     is Resource.Error -> {
                         _state.value = _state.value.copy(
-                            wordInfoItems = result.data ?: emptyList(),
+                            translatedWordItems = result.data ?: emptyList(),
                             isLoading = false
                         )
                         _eventFlow.emit(UiEvent.showSnackBar(result.message ?: "Unknown error "))
                     }
                     is Resource.Loading -> {
                         _state.value = _state.value.copy(
-                            wordInfoItems = result.data ?: emptyList(),
+                            translatedWordItems = result.data ?: emptyList(),
                             isLoading = true
                         )
 
@@ -69,7 +60,7 @@ class WordInfoViewModel @Inject constructor(
                     }
                     is Resource.Success -> {
                         _state.value = _state.value.copy(
-                            wordInfoItems = result.data ?: emptyList(),
+                            translatedWordItems = result.data ?: emptyList(),
                             isLoading = false
                         )
                     }
@@ -77,6 +68,5 @@ class WordInfoViewModel @Inject constructor(
             }.launchIn(this)
         }
     }
-
 
 }

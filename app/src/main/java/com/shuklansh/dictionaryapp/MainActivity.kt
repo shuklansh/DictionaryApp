@@ -3,6 +3,7 @@ package com.shuklansh.dictionaryapp
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -17,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.shuklansh.dictionaryapp.feature_dictionary.presentation.UiEvent
 import com.shuklansh.dictionaryapp.feature_dictionary.presentation.WordInfoViewModel
 import com.shuklansh.dictionaryapp.ui.WordInfoItem
@@ -32,11 +34,14 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val vm: WordInfoViewModel = hiltViewModel()
+            //val vm: WordInfoViewModel = hiltViewModel()
+            val vm : WordInfoViewModel by viewModels()
             val state = vm.state.collectAsState()
             DictionaryAppTheme {
 
                 val scaffoldState = rememberScaffoldState()
+
+                val queryState = vm.qstate.collectAsState().value
 
                 LaunchedEffect(key1 = true) {
                     vm.eventFlow.collectLatest { event ->
@@ -54,37 +59,43 @@ class MainActivity : ComponentActivity() {
                     scaffoldState = scaffoldState
                 ) {
 
-                    Box(modifier = Modifier.fillMaxSize()){
+
+                    Box(modifier = Modifier.fillMaxSize()) {
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(4.dp))
+                                .padding(4.dp)
+                        )
                         {
 
                             TextField(
-                                value = vm.searchQuery.value,
+                                value = queryState.queryword ,
+                                //vm.searchQuery.value,
                                 onValueChange = vm::onSearch,
-                                modifier = Modifier.fillMaxWidth().height(72.dp),
-                                placeholder = {Text(text = "Search")}
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(72.dp),
+                                placeholder = { Text(text = "Search") }
                             )
                             Spacer(Modifier.height(12.dp))
-                            LazyColumn(Modifier.fillMaxSize()){
-                                items(state.value.wordInfoItems.size){ i->
+                            LazyColumn(Modifier.fillMaxSize()) {
+                                items(state.value.wordInfoItems.size) { i ->
                                     val wordInfo = state.value.wordInfoItems[i]
-                                    if(i>0){
+                                    if (i > 0) {
                                         Spacer(Modifier.height(8.dp))
                                     }
                                     WordInfoItem(wordInfo = wordInfo)
-                                    if(i < state.value.wordInfoItems.size -1){
+                                    if (i < state.value.wordInfoItems.size - 1) {
                                         Divider()
                                     }
 
                                 }
                             }
-                            if(state.value.isLoading){
-                                CircularProgressIndicator(Modifier.align(Alignment.CenterHorizontally))
-                            }
 
+
+                        }
+                        if (state.value.isLoading) {
+                            CircularProgressIndicator(Modifier.align(Alignment.Center))
                         }
                     }
 
